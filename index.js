@@ -129,18 +129,24 @@ our program and get involved.`);
     }
 });
 
+const requestListener = function (req, res) {
+    res.writeHead(200);
+    res.end("TRUE");
+};
+const server = http.createServer(requestListener);
+
 bot.launch(() => {
     try {
-        const requestListener = function (req, res) {
-            res.writeHead(200);
-            res.end("TRUE");
-        };
-        http.createServer(requestListener).listen(config.port, "localhost");
+        server.listen(config.port, "localhost");
         console.log("Launched.");
     } catch (error) {
         console.log(error);
     }
 });
 
-process.once("SIGINT", () => bot.stop("SIGINT"));
-process.once("SIGTERM", () => bot.stop("SIGTERM"));
+process.once("SIGINT", () => {
+    server.close(), bot.stop("SIGINT");
+});
+process.once("SIGTERM", () => {
+    server.close(), bot.stop("SIGTERM");
+});
